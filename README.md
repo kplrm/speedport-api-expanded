@@ -5,7 +5,6 @@
 [![PyPI](https://img.shields.io/pypi/v/speedport-api-expanded?color=blue)](https://pypi.org/project/speedport-api-expanded/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/speedport-api-expanded)](https://www.python.org/)
 [![PyPI - License](https://img.shields.io/pypi/l/speedport-api-expanded)](https://github.com/kplrm/speedport-api-expanded/blob/main/LICENSE)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/speedport-api-expanded)](https://pypistats.org/packages/speedport-api-expanded)
 
 Control Telekom Speedport routers with Python!
 
