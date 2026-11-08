@@ -6,15 +6,18 @@ with open("README.md", "r", encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
-    name="speedport-api",
-    version="0.6.0",
-    author="Andre Basche",
+    name="speedport-api-expanded",
+    version="0.7.0",
+    author="Andre Basche, Diego Guillen-Rosaperez",
+    maintainer="Diego Guillen-Rosaperez",
     description="Control Telekom Speedport routers with Python",
     long_description=long_description,
     long_description_content_type="text/markdown",
+    url="https://github.com/kplrm/speedport-api-expanded",
     project_urls={
-        "GitHub": "https://github.com/Andre0512/speedport-api",
-        "PyPI": "https://pypi.org/project/speedport-api",
+        "GitHub": "https://github.com/kplrm/speedport-api-expanded",
+        "PyPI": "https://pypi.org/project/speedport-api-expanded/",
+        "Upstream": "https://github.com/Andre0512/speedport-api",
     },
     license="MIT",
     platforms="any",
@@ -33,6 +36,8 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
+        "Programming Language :: Python :: 3.14",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     entry_points={

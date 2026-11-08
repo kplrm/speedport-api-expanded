@@ -1,10 +1,11 @@
+from __future__ import annotations
+
 import asyncio
 import json
 import logging
 import re
 from hashlib import sha256
 from json import JSONDecodeError
-from typing import Self
 
 import aiohttp
 from Crypto.Cipher import AES
@@ -76,7 +77,7 @@ class Connection:
     def _kwargs(self):
         return {"verify_ssl": self._verify_ssl, "timeout": self._timeout}
 
-    async def create(self) -> Self:
+    async def create(self) -> Connection:
         """Create aiohttp session"""
         connector = aiohttp.TCPConnector(verify_ssl=self._verify_ssl)
         if not self._session:

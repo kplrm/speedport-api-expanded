@@ -1,19 +1,22 @@
 **This python package is unofficial and is not related in any way to Telekom. It was developed by reversed engineered http requests and can stop working at anytime!**
   
 ## Speedport-API
-[![PyPI - Status](https://img.shields.io/pypi/status/speedport-api)](https://pypi.org/project/speedport-api)
-[![PyPI](https://img.shields.io/pypi/v/speedport-api?color=blue)](https://pypi.org/project/speedport-api)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/speedport-api)](https://www.python.org/)
-[![PyPI - License](https://img.shields.io/pypi/l/speedport-api)](https://github.com/Andre0512/speedport-api/blob/main/LICENSE)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/speedport-api)](https://pypistats.org/packages/speedport-api)  
+[![PyPI - Status](https://img.shields.io/pypi/status/speedport-api-expanded)](https://pypi.org/project/speedport-api-expanded/)
+[![PyPI](https://img.shields.io/pypi/v/speedport-api-expanded?color=blue)](https://pypi.org/project/speedport-api-expanded/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/speedport-api-expanded)](https://www.python.org/)
+[![PyPI - License](https://img.shields.io/pypi/l/speedport-api-expanded)](https://github.com/kplrm/speedport-api-expanded/blob/main/LICENSE)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/speedport-api-expanded)](https://pypistats.org/packages/speedport-api-expanded)
+
 Control Telekom Speedport routers with Python!
 
 ### Installation
 ```commandline
-pip install speedport-api
+pip install speedport-api-expanded
 ```
 
-For this fork's changes, install from a checkout with `python -m pip install -e .`.
+For this fork's changes, install from a checkout with `python -m pip install -e .`
+or download a wheel from [GitHub releases](https://github.com/kplrm/speedport-api-expanded/releases).
+The Python import remains `from speedport import Speedport`.
 See [local development and adding features](docs/development.md),
 [contribution guidelines](CONTRIBUTING.md), and [contributors](CONTRIBUTORS.md).
 Store local router credentials in an

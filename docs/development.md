@@ -1,7 +1,7 @@
 # Local development
 
-Run commands from the repository root. This fork's changes require a local
-checkout; installing the upstream PyPI package will not include them.
+Run commands from the repository root. The fork's PyPI package is
+`speedport-api-expanded`; its Python import remains `speedport`.
 
 ## Envirnonment
 
@@ -71,3 +71,54 @@ For example, IP information uses `data/IPData.json` with the referring page
 `html/content/internet/con_ipdata.html`. `await router.ip_info` refreshes the
 cached fields and returns the router's field names and values. It propagates
 authentication and connection errors rather than returning stale data.
+
+## Checks and releases
+
+```sh
+python -m unittest discover -s tests -v
+python -m black speedport tests setup.py --check
+python -m flake8 speedport tests setup.py --select=E9,F63,F7,F82
+```
+
+CI installs the package and runs compatibility tests on Python 3.8–3.14 without
+router access. Pushes and pull requests to `main` run these checks automatically.
+
+To release, update `version` in `setup.py`, push to `main`, then run **Actions →
+Release Python Package → Run workflow** on `main`. Only `kplrm` can execute the
+release pipeline, including reruns. After all checks pass, the workflow builds
+and validates the wheel/source archive, publishes it to PyPI, then creates a
+GitHub release with the same files at the tested commit. An existing `v<version>`
+tag skips publishing and release creation; bump the version for a new
+release. Releases are serialized to avoid duplicate runs publishing concurrently.
+GitHub release creation uses GitHub's built-in token. PyPI publishing uses OIDC
+Trusted Publishing, with no PyPI password or API token stored in the repository.
+Build, PyPI publish, and GitHub release jobs have separate permissions.
+
+## One-time PyPI setup
+
+Creating an account does not grant access to the upstream `speedport-api` project.
+This fork publishes as `speedport-api-expanded`.
+
+1. In GitHub, open this repository's **Settings → Environments**, create `pypi`,
+   and restrict its deployment branches to `main`.
+2. In PyPI, open [your account's Publishing page](https://pypi.org/manage/account/publishing/)
+   and add a pending GitHub publisher with these exact values:
+
+   | Field | Value |
+   | --- | --- |
+   | PyPI project name | `speedport-api-expanded` |
+   | Owner | `kplrm` |
+   | Repository | `speedport-api-expanded` |
+   | Workflow filename | `python-publish.yml` |
+   | Environment | `pypi` |
+
+3. Push these changes to `main`, then manually run **Release Python Package**.
+   The first successful upload creates the PyPI project. Subsequent uploads use
+   the same publisher. If the package already exists under your account, configure
+   its publisher under **Manage project → Publishing** instead.
+
+See [PyPI's pending publisher guide](https://docs.pypi.org/trusted-publishers/creating-a-project-through-oidc/).
+The pending publisher does not reserve the package name. Published versions
+cannot be replaced; bump `setup.py` for each new release. If PyPI publishing
+succeeds but GitHub release creation fails, use **Re-run failed jobs** to retry
+the GitHub job without uploading the package again.
