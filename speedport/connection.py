@@ -38,7 +38,7 @@ def encode(data, key: str = "") -> str:
 
 
 def simplify_response(
-    data: list[dict[str, str | list[dict[str, str]]]]
+    data: list[dict[str, str | list[dict[str, str]]]],
 ) -> dict[str, list | dict | str]:
     """Remove 'varid' and 'varvalue' to have a flatter data structure without overhead"""
     result = {}

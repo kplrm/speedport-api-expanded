@@ -13,6 +13,12 @@ Control Telekom Speedport routers with Python!
 pip install speedport-api
 ```
 
+For this fork's changes, install from a checkout with `python -m pip install -e .`.
+See [local development and adding features](docs/development.md),
+[contribution guidelines](CONTRIBUTING.md), and [contributors](CONTRIBUTORS.md).
+Store local router credentials in an
+ignored `.env` copied from [.env.example](.env.example); see the guide for loading it.
+
 ### Supported Devices
 * Speedport Smart 4
 
@@ -38,6 +44,22 @@ $ speedport reconnect
 Reconnect with internet provider...
 123.45.67.12 / 5403:f3:35fe:12f:7287:41cf:fb1c:3c83
 ```
+
+#### Query IPv4 and IPv6 information
+```commandline
+speedport --host 192.168.2.1 ip-info
+speedport --host 192.168.2.1 --batch ip-info
+```
+Prints addresses, gateways, primary/secondary DNS servers, and IPv6 prefixes.
+Batch output uses tab-separated field/value pairs. A password is prompted for
+unless `SPEEDPORT_PASSWORD` is set.
+
+To print only the public IPv4 address, without a label or table:
+```commandline
+python -m speedport --host 192.168.2.1 ip-info --ipv4
+93.218.250.118
+```
+If no public IPv4 address is available, the command exits with an error.
 
 #### Enable wps connect
 ```commandline
@@ -76,6 +98,24 @@ $ speedport calls
 ```
 
 ### Library
+
+#### IP information example
+```python
+import asyncio
+import os
+from speedport import Speedport
+
+async def ip_info():
+    async with Speedport(
+        os.environ.get("SPEEDPORT_HOST", "192.168.2.1"),
+        os.environ["SPEEDPORT_PASSWORD"],
+    ) as router:
+        info = await router.ip_info
+        print(info["public_ip_v4"], info["public_ip_v6"])
+        print(info)  # All fields, including DNS servers and IPv6 prefixes.
+
+asyncio.run(ip_info())
+```
 
 #### Reconnect example
 ```python

@@ -126,6 +126,12 @@ class Speedport:
         with suppress(exceptions.LoginPausedError):
             self._ip_data = await self.api.get_ip_data()
 
+    @property
+    async def ip_info(self) -> dict:
+        """Fetch IPv4/IPv6 addresses, gateways, DNS servers and IPv6 prefixes."""
+        self._ip_data = await self.api.get_ip_data()
+        return self._ip_data.copy()
+
     async def update_status(self):
         self._status = await self.api.get_status()
 

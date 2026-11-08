@@ -3,6 +3,7 @@
 import argparse
 import asyncio
 import logging
+import os
 import sys
 import time
 from getpass import getpass
@@ -75,12 +76,17 @@ def get_arguments():
         "-H",
         "--host",
         help="ip address or hostname of Speedport webinterface",
-        default="speedport.ip",
+        default=os.environ.get("SPEEDPORT_HOST", "speedport.ip"),
     )
     parser.add_argument(
         "-s", "--https", help="use https connection", action="store_true"
     )
-    parser.add_argument("-p", "--password", help="password of Speedport webinterface")
+    parser.add_argument(
+        "-p",
+        "--password",
+        help="password of Speedport webinterface (default: SPEEDPORT_PASSWORD)",
+        default=os.environ.get("SPEEDPORT_PASSWORD"),
+    )
     parser.add_argument(
         "-d", "--debug", help="enable debug logging", action="store_true"
     )
@@ -102,21 +108,41 @@ def get_arguments():
     reconnect = subparser.add_parser(
         "reconnect", help="Reconnect internet and receive new ip"
     )
-    reconnect.add_argument(
-        "reconnect", help="Reconnect internet and receive new ip", action="store_true"
-    )
+    reconnect.set_defaults(reconnect=True)
     reboot = subparser.add_parser("reboot", help="Reboot device")
-    reboot.add_argument("reboot", help="Reboot device", action="store_true")
+    reboot.set_defaults(reboot=True)
     wps = subparser.add_parser("wps", help="Turn on wps for 2 minutes")
-    wps.add_argument("wps", help="Turn on wps for 2 minutes", action="store_true")
+    wps.set_defaults(wps=True)
     devices = subparser.add_parser("devices", help="Output devices")
-    devices.add_argument("devices", help="List connected devices", action="store_true")
+    devices.set_defaults(devices=True)
     calls = subparser.add_parser("calls", help="Output calls")
-    calls.add_argument("calls", help="List last calls", action="store_true")
+    calls.set_defaults(calls=True)
+    ip_info = subparser.add_parser("ip-info", help="Output IPv4 and IPv6 information")
+    ip_info.set_defaults(ip_info=True)
+    ip_info.add_argument(
+        "--ipv4", help="Print only the public IPv4 address", action="store_true"
+    )
     return vars(parser.parse_args())
 
 
 async def check_args(speedport, args):
+    if args.get("ip_info"):
+        info = await speedport.ip_info
+        if args.get("ipv4"):
+            address = info.get("public_ip_v4")
+            if not address:
+                raise SystemExit("Router did not report a public IPv4 address")
+            print(address)
+        elif args.get("batch"):
+            for key, value in info.items():
+                print(key, value, sep="\t")
+        else:
+            print(
+                data_table(
+                    [{"field": key, "value": value} for key, value in info.items()],
+                    ["field", "value"],
+                )
+            )
     if args.get("wps"):
         await wps_enable(args, speedport)
     if args.get("reconnect"):
