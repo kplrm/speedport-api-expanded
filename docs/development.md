@@ -122,3 +122,15 @@ The pending publisher does not reserve the package name. Published versions
 cannot be replaced; bump `setup.py` for each new release. If PyPI publishing
 succeeds but GitHub release creation fails, use **Re-run failed jobs** to retry
 the GitHub job without uploading the package again.
+
+## Container image
+
+Run **Actions → Publish Container Image → Run workflow** on `main` as `kplrm`.
+This independent workflow builds the root `Dockerfile` using the latest published
+PyPI package version. It publishes to GitHub Container Registry, tagged with the
+package version and `latest`:
+
+```sh
+docker pull ghcr.io/kplrm/speedport-api-expanded:latest
+docker run --rm ghcr.io/kplrm/speedport-api-expanded:latest speedport --help
+```

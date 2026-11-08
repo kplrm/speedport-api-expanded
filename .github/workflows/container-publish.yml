@@ -1,0 +1,53 @@
+name: Publish Container Image
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: container-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: >-
+      github.repository == 'kplrm/speedport-api-expanded' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'kplrm' && github.triggering_actor == 'kplrm'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        persist-credentials: false
+    - name: Resolve latest published package version
+      run: |
+        version=$(python3 -c 'import json, urllib.request; print(json.load(urllib.request.urlopen("https://pypi.org/pypi/speedport-api-expanded/json", timeout=30))["info"]["version"])')
+        if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          echo "Expected a stable package version, received: $version" >&2
+          exit 1
+        fi
+        echo "VERSION=$version" >> "$GITHUB_ENV"
+        echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+    - name: Build image
+      run: |
+        docker build --pull --build-arg "SPEEDPORT_VERSION=$VERSION" \
+          --tag "$IMAGE:$VERSION" --tag "$IMAGE:latest" .
+    - name: Verify package and CLI
+      run: |
+        docker run --rm --env "EXPECTED_VERSION=$VERSION" "$IMAGE:$VERSION" \
+          python -c 'import importlib.metadata, os; assert importlib.metadata.version("speedport-api-expanded") == os.environ["EXPECTED_VERSION"]'
+        docker run --rm "$IMAGE:$VERSION" speedport ip-info --help
+    - name: Log in to GitHub Container Registry
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: echo "$GH_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+    - name: Publish image to GitHub
+      run: |
+        docker push "$IMAGE:$VERSION"
+        docker push "$IMAGE:latest"
+        echo "Published $IMAGE:$VERSION and $IMAGE:latest" >> "$GITHUB_STEP_SUMMARY"
